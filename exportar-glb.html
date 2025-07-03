@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Generador GLB</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #btnExportar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+      padding: 10px 20px;
+      background-color: #673ab7;
+      color: white;
+      border: none;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button id="btnExportar">Exportar a .glb</button>
+
+  <!-- Three.js y GLTFExporter -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/examples/js/exporters/GLTFExporter.js"></script>
+
+  <script>
+    // Configuración de escena
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Modelo 3D
+    const geometry = new THREE.SphereGeometry(1, 32, 32);
+    const material = new THREE.MeshStandardMaterial({ color: 0x2196f3 });
+    const objeto = new THREE.Mesh(geometry, material);
+    scene.add(objeto);
+
+    // Iluminación
+    const luzPrincipal = new THREE.DirectionalLight(0xffffff, 1);
+    luzPrincipal.position.set(5, 5, 5);
+    scene.add(luzPrincipal);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+
+    // Posición de cámara
+    camera.position.z = 4;
+
+    // Animación del modelo
+    function animate() {
+      requestAnimationFrame(animate);
+      objeto.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Exportar .glb al presionar botón
+    document.getElementById("btnExportar").addEventListener("click", () => {
+      const exporter = new THREE.GLTFExporter();
+      exporter.parse(scene, result => {
+        const blob = new Blob([result], { type: 'model/gltf-binary' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'modelo.glb';
+        link.click();
+      }, { binary: true });
+    });
+  </script>
+</body>
+</html>

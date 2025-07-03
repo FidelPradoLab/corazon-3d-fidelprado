@@ -2,48 +2,76 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visor 3D · Corazón</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/png" href="icons/icon-192.png" />
-  <script defer src="guidedAssembly.js"></script>
-  <script defer src="toggleDescriptions.js"></script>
-  <script defer src="adminAccess.js"></script>
+  <title>Exportar Modelo .glb</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+    #btnExportar {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      z-index: 10;
+      background: crimson;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <div id="visor3d">
-    <canvas id="heartCanvas"></canvas>
-  </div>
-
-  <div id="controles">
-    <button onclick="toggleDescriptions()">🛈 Descripciones</button>
-    <button onclick="guidedAssembly.start()">▶ Ensamblaje Guiado</button>
-    <button onclick="adminAccess.toggleMode()">🔐 Modo Profesional</button>
-  </div>
+  <button id="btnExportar">📦 Exportar .glb</button>
 
   <script type="module">
     import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
-    import { GLTFLoader } from 'https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js';
+    import { GLTFExporter } from 'https://unpkg.com/three@0.158.0/examples/jsm/exporters/GLTFExporter.js';
 
+    // Escena básica
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("heartCanvas"), alpha: true });
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.z = 3;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    const loader = new GLTFLoader();
-    loader.load("assets/corazon.glb", function(gltf) {
-      scene.add(gltf.scene);
-    });
+    // Geometría + material
+    const geometry = new THREE.SphereGeometry(1, 32, 32);
+    const material = new THREE.MeshStandardMaterial({ color: 0xcc0033 });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.scale.y = 1.2;
+    mesh.scale.z = 0.8;
+    scene.add(mesh);
 
-    camera.position.z = 5;
+    // Iluminación
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.5));
 
-    const animate = function () {
+    // Controles de cámara
+    new OrbitControls(camera, renderer.domElement);
+
+    // Animación
+    function animate() {
       requestAnimationFrame(animate);
+      mesh.rotation.y += 0.003;
       renderer.render(scene, camera);
-    };
-
+    }
     animate();
+
+    // Exportar a .glb
+    document.getElementById('btnExportar').addEventListener('click', () => {
+      const exporter = new GLTFExporter();
+      exporter.parse(scene, (result) => {
+        const blob = new Blob([result], { type: 'model/gltf-binary' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'corazon-prototipo.glb';
+        a.click();
+      }, { binary: true });
+    });
   </script>
 </body>
 </html>
