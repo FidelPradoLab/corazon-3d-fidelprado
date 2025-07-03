@@ -1,0 +1,37 @@
+{
+  "base_ventricular": {
+    "ensambla_con": ["pared_septal"],
+    "info": "Base muscular inferior, estructura inicial para el ensamblaje",
+    "posicion": [0, 0, 0]
+  },
+  "pared_septal": {
+    "ensambla_con": ["aurícula_derecha", "aurícula_izquierda"],
+    "info": "Divide los ventrículos derecho e izquierdo",
+    "posicion": [0, 1.2, 0]
+  },
+  "aurícula_derecha": {
+    "ensambla_con": ["válvula_tricúspide"],
+    "info": "Recibe sangre desoxigenada de la cava superior",
+    "posicion": [-1.3, 2.4, 0.1]
+  },
+  "aurícula_izquierda": {
+    "ensambla_con": ["válvula_mitral"],
+    "info": "Recibe sangre oxigenada de las venas pulmonares",
+    "posicion": [1.3, 2.4, 0.1]
+  },
+  "válvula_mitral": {
+    "ensambla_con": ["ventrículo_izquierdo"],
+    "info": "Regula el flujo entre aurícula izquierda y ventrículo izquierdo",
+    "posicion": [1.2, 1.1, -0.3]
+  },
+  "válvula_tricúspide": {
+    "ensambla_con": ["ventrículo_derecho"],
+    "info": "Regula el flujo entre aurícula derecha y ventrículo derecho",
+    "posicion": [-1.2, 1.1, -0.3]
+  },
+  "arco_aórtico": {
+    "ensambla_con": ["válvula_aórtica"],
+    "info": "Transporta sangre oxigenada al cuerpo",
+    "posicion": [0, 3.2, 0.5]
+  }
+}

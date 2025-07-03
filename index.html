@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visor 3D · Corazón</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="icons/icon-192.png" />
+  <script defer src="guidedAssembly.js"></script>
+  <script defer src="toggleDescriptions.js"></script>
+  <script defer src="adminAccess.js"></script>
+  <script defer src="supervisordetiempo.js"></script>
+</head>
+<body>
+  <div id="visor3d">
+    <canvas id="heartCanvas"></canvas>
+  </div>
+
+  <div id="controles">
+    <button onclick="toggleDescriptions()">🛈 Descripciones</button>
+    <button onclick="guidedAssembly.start()">▶ Ensamblaje Guiado</button>
+    <button onclick="adminAccess.toggleMode()">🔐 Modo Profesional</button>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("heartCanvas"), alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const loader = new GLTFLoader();
+    loader.load("assets/corazon.glb", function(gltf) {
+      scene.add(gltf.scene);
+    });
+
+    camera.position.z = 5;
+
+    const animate = function () {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    };
+
+    animate();
+  </script>
+</body>
+</html>
